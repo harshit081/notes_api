@@ -9,7 +9,7 @@ const app = express();
 
 // Middleware
 app.use(bodyParser.json());
-// app.use(passport.initialize());
+app.use(passport.initialize());
 app.use(cors())
 
 // Connect to MongoDB

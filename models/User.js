@@ -26,6 +26,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'https://example.com/default-profile-image.png',
   },
+  googleId: String,  // Added for Google login
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
 });
 
 const User = mongoose.model('User', userSchema);

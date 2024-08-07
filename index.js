@@ -2,15 +2,26 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
+const rateLimit = require('express-rate-limit');
+const session = require('express-session');
+
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+});
+
 require('dotenv').config();
 require('./config/passport');
 const cors = require('cors');
 const app = express();
 
 // Middleware
+app.use(limiter);
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(cors())
+app.use(session({ secret: process.env.JWT_SECRET, resave: false, saveUninitialized: true }));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {

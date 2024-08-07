@@ -1,28 +1,24 @@
 const nodemailer = require('nodemailer');
-const postmarkTransport = require('nodemailer-postmark-transport');
 
-// Create a transport object using Postmark
-const transporter = nodemailer.createTransport(postmarkTransport({
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
   auth: {
-    apiKey: process.env.POSTMARK_API_KEY,
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
-}));
+});
 
-const sendResetPasswordEmail = (email, token) => {
+async function sendPasswordResetEmail(email, token) {
+  const resetUrl = `http://localhost:8080/reset-password/${token}`;
   const mailOptions = {
-    from: process.env.EMAIL_USER, // Your verified Postmark email address
+    from: '"Your Name" <your-email@gmail.com>',
     to: email,
-    subject: 'Reset your password',
-    text: `Click this link to reset your password: http://localhost:8080/api/auth/reset-password?token=${token}`,
+    subject: 'Password Reset',
+    text: `Click the following link to reset your password: ${resetUrl}`,
+    html: `<p>Click the following link to reset your password: <a href="${resetUrl}">${resetUrl}</a></p>`,
   };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error('Error sending reset password email:', error);
-    } else {
-      console.log('Reset password email sent:', info.response);
-    }
-  });
-};
+  await transporter.sendMail(mailOptions);
+}
 
-module.exports = sendResetPasswordEmail;
+module.exports = { sendPasswordResetEmail };
